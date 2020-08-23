@@ -26,9 +26,9 @@ void PowerTask(lv_task_t * _task) {
       if (lv_scr_act() == clockScreen) {
         toggleBacklight();
       } else if (lv_scr_act() == notificationScreen) {
-        NotificationScreenBuild();
-        lv_scr_load(notificationScreen);
-        ClockScreenDestroy();
+        ClockScreenBuild();
+        lv_scr_load(clockScreen);
+        NotificationScreenDestroy();
       } else {
         toggleBacklight();
       }
