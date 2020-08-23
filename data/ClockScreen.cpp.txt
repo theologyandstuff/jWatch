@@ -1,0 +1,140 @@
+#include <Arduino.h>
+#include "ClockScreen.h"
+
+#define LILYGO_WATCH_2020_V1
+#define LILYGO_WATCH_LVGL
+#include <LilyGoWatch.h>
+
+void ClockScreen::build() {
+  screen = lv_obj_create(NULL, NULL);
+
+  static lv_style_t screen_style;
+  static lv_style_t clock_label_style;
+  static lv_style_t indicator_arc_style;
+  static lv_style_t battery_arc_style;
+  static lv_style_t arc_1_arc_style;
+  static lv_style_t arc_2_arc_style;
+
+  lv_style_init(&screen_style);
+  lv_style_set_bg_color(&screen_style, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_style_set_text_font(&screen_style, LV_STATE_DEFAULT, &lv_font_montserrat_16);
+  lv_style_set_text_color(&screen_style, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+
+  lv_style_init(&clock_label_style);
+  lv_style_set_text_font(&clock_label_style, LV_STATE_DEFAULT, &lv_font_montserrat_48);
+
+  lv_style_init(&indicator_arc_style);
+  lv_style_set_line_width(&indicator_arc_style, LV_STATE_DEFAULT, 5);
+  lv_style_set_line_rounded(&indicator_arc_style, LV_STATE_DEFAULT, false);
+  lv_style_set_bg_opa(&indicator_arc_style, LV_STATE_DEFAULT, LV_OPA_TRANSP);
+  lv_style_set_border_width(&indicator_arc_style, LV_STATE_DEFAULT, 0);
+  lv_style_set_pad_top(&indicator_arc_style, LV_STATE_DEFAULT, 0);
+  lv_style_set_pad_bottom(&indicator_arc_style, LV_STATE_DEFAULT, 0);
+  lv_style_set_pad_left(&indicator_arc_style, LV_STATE_DEFAULT, 0);
+  lv_style_set_pad_right(&indicator_arc_style, LV_STATE_DEFAULT, 0);
+  lv_style_set_margin_top(&indicator_arc_style, LV_STATE_DEFAULT, 0);
+  lv_style_set_margin_bottom(&indicator_arc_style, LV_STATE_DEFAULT, 0);
+  lv_style_set_margin_left(&indicator_arc_style, LV_STATE_DEFAULT, 0);
+  lv_style_set_margin_right(&indicator_arc_style, LV_STATE_DEFAULT, 0);
+  lv_style_set_radius(&indicator_arc_style, LV_STATE_DEFAULT, 0);
+
+  lv_style_init(&battery_arc_style);
+  lv_style_set_bg_color(&battery_arc_style, LV_STATE_DEFAULT, LV_COLOR_RED);
+
+  lv_style_init(&arc_1_arc_style);
+  lv_style_set_line_color(&arc_1_arc_style, LV_STATE_DEFAULT, LV_COLOR_GREEN);
+
+  lv_style_init(&arc_2_arc_style);
+  lv_style_set_line_color(&arc_2_arc_style, LV_STATE_DEFAULT, LV_COLOR_BLUE);
+
+  lv_obj_add_style(screen, LV_OBJ_PART_MAIN, &screen_style);
+
+  battery_arc = lv_arc_create(screen, NULL);
+  lv_obj_add_style(battery_arc, LV_OBJ_PART_MAIN, &indicator_arc_style);
+  lv_obj_add_style(battery_arc, LV_ARC_PART_INDIC, &indicator_arc_style);
+  lv_obj_add_style(battery_arc, LV_ARC_PART_INDIC, &battery_arc_style);
+  lv_arc_set_bg_angles(battery_arc, 271, 270);
+  lv_arc_set_start_angle(battery_arc, 269);
+  lv_arc_set_end_angle(battery_arc, 270);
+  lv_obj_set_size(battery_arc, 50, 50);
+  lv_obj_align(battery_arc, NULL, LV_ALIGN_CENTER, -60, -85);
+
+  battery_label = lv_label_create(screen, NULL);
+  lv_label_set_align(battery_label, LV_LABEL_ALIGN_CENTER);
+  //  lv_label_set_text(battery_label, String(ttgo->power->getBattPercentage()+ '\n' + LV_SYMBOL_BATTERY_FULL).c_str());
+  lv_obj_align(battery_label, battery_arc, LV_ALIGN_CENTER, 0, 0);
+
+  other_arc1 = lv_arc_create(screen, battery_arc);
+  lv_obj_add_style(other_arc1, LV_ARC_PART_INDIC, &arc_1_arc_style);
+  other_label1 = lv_label_create(screen, battery_label);
+  lv_obj_set_size(other_arc1, 50, 50);
+  lv_label_set_text(other_label1, "1");
+  lv_obj_align(other_arc1, NULL, LV_ALIGN_CENTER, 0, -85);
+  lv_obj_align(other_label1, other_arc1, LV_ALIGN_CENTER, 0, 0);
+
+  other_arc2 = lv_arc_create(screen, battery_arc);
+  lv_obj_add_style(other_arc2, LV_ARC_PART_INDIC, &arc_2_arc_style);
+  other_label2 = lv_label_create(screen, battery_label);
+  lv_obj_set_size(other_arc2, 50, 50);
+  lv_label_set_text(other_label2, "2");
+  lv_obj_align(other_arc2, NULL, LV_ALIGN_CENTER, 60, -85);
+  lv_obj_align(other_label2, other_arc2, LV_ALIGN_CENTER, 0, 0);
+
+  //  other_arc3 = lv_arc_create(screen, battery_arc);
+  //  other_label3 = lv_label_create(screen, battery_label);
+  ////  lv_obj_set_size(other_arc3, 70, 70);
+  //  lv_label_set_text(other_label3, "3");
+  //  lv_obj_align(other_arc3, NULL, LV_ALIGN_CENTER, 60, 60);
+  //  lv_obj_align(other_label3, other_arc3, LV_ALIGN_CENTER, 0, 0);
+
+  clock_label = lv_label_create(screen, NULL);
+  lv_obj_add_style(clock_label, LV_OBJ_PART_MAIN, &clock_label_style);
+  lv_label_set_text(clock_label, "12:00");
+  lv_obj_align(clock_label, NULL, LV_ALIGN_CENTER, 0, -30);
+
+  //  clock_task = lv_task_create(this->updateClockTask, 1000, LV_TASK_PRIO_MID, nullptr);
+  ClockScreen::updateBatteryPercentage();
+}
+
+void ClockScreen::updateClock(String temp) {
+  lv_label_set_text(clock_label, temp.c_str());
+  lv_obj_realign(clock_label);
+}
+
+void ClockScreen::updateClock() {
+  ClockScreen::updateClock(ttgo->rtc->formatDateTime(PCF_TIMEFORMAT_HM));
+}
+
+void ClockScreen::task(lv_task_t * _task) {
+  ClockScreen::updateClock();
+  ClockScreen::updateBatteryPercentage();
+}
+
+void ClockScreen::setTaskHandler(lv_task_t * _task) {
+  task_handler = _task;
+}
+
+lv_task_t * ClockScreen::getTaskHandler() {
+  return task_handler;
+}
+
+void ClockScreen::updateBatteryPercentage() {
+  int level = ttgo->power->getBattPercentage();
+  ClockScreen::setArcPercentages(battery_arc, level);
+  if (level >= 87) {
+    lv_label_set_text(battery_label, String(LV_SYMBOL_BATTERY_FULL).c_str());
+  } else if ((level < 87) && (level >= 62)) {
+    lv_label_set_text(battery_label, String(LV_SYMBOL_BATTERY_3).c_str());
+  } else if ((level < 62) && (level >= 37)) {
+    lv_label_set_text(battery_label, String(LV_SYMBOL_BATTERY_2).c_str());
+  } else if ((level < 37) && (level >= 12)) {
+    lv_label_set_text(battery_label, String(LV_SYMBOL_BATTERY_1).c_str());
+  } else {
+    lv_label_set_text(battery_label, String(LV_SYMBOL_BATTERY_EMPTY).c_str());
+  }
+  lv_obj_realign(battery_label);
+}
+
+void ClockScreen::setArcPercentages(lv_obj_t *arc, float value) {
+  lv_arc_set_angles(arc, map(value, 0, 100, 360 + lv_arc_get_bg_angle_end(battery_arc), lv_arc_get_bg_angle_start(battery_arc)) % 360,  lv_arc_get_bg_angle_end(battery_arc));
+}

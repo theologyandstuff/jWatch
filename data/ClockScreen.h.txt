@@ -1,0 +1,44 @@
+#ifndef CLOCK_SCREEN_H_
+#define CLOCK_SCREEN_H_
+
+#include <Arduino.h>
+#include "Screen.h"
+
+#ifndef LILYGO_DEFINES
+#define LILYGO_DEFINES
+#define LILYGO_WATCH_2020_V1
+#define LILYGO_WATCH_LVGL
+#include <LilyGoWatch.h>
+#endif
+
+class ClockScreen : public Screen {
+public:
+  void build();
+  void updateClock(String temp);
+  void updateClock();
+  void task(lv_task_t * task);
+  void updateBatteryPercentage();
+  void setTaskHandler(lv_task_t * _task);
+  void setArcPercentages(lv_obj_t *arc, float value);
+  
+  lv_task_t * getTaskHandler();
+
+private:
+  lv_obj_t * clock_label;
+
+  lv_obj_t * battery_arc;
+  lv_obj_t * battery_label;
+
+  lv_obj_t * other_arc1;
+  lv_obj_t * other_label1;
+
+  lv_obj_t * other_arc2;
+  lv_obj_t * other_label2;
+
+  lv_obj_t * other_arc3;
+  lv_obj_t * other_label3;
+
+  lv_task_t * task_handler;
+};
+
+#endif
