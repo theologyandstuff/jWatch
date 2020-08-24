@@ -9,7 +9,7 @@
 #include <stack>
 
 #define DEVICE_NAME "jWatch"
-#define BACKLIGHT_TRANSITION_TIME 500
+#define BACKLIGHT_TRANSITION_TIME 300
 
 BLENotifications  notifications;
 uint32_t          incomingCallNotificationUUID;
