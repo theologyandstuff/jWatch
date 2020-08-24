@@ -45,8 +45,12 @@ void updateClockScreenClockLabel() {
 }
 
 void ClockScreenDestroy() {
-  lv_task_del(clockScreenTask);
-  lv_obj_del(clockScreen);
+  if (clockScreenTask != nullptr) {
+    lv_task_del(clockScreenTask);
+  }
+  if (clockScreen != nullptr) {
+    lv_obj_del(clockScreen);
+  }
 }
 
 String zeroPad(int value) {

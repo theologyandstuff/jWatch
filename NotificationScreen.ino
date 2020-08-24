@@ -101,6 +101,10 @@ void NotificationScreenTask(lv_task_t * _task) {
 }
 
 void NotificationScreenDestroy() {
-  lv_task_del(notificationScreenTask);
-  lv_obj_del(notificationScreen);
+  if (notificationScreenTask != nullptr) {
+    lv_task_del(notificationScreenTask);
+  }
+  if (notificationScreen != nullptr) {
+    lv_obj_del(notificationScreen);
+  }
 }
