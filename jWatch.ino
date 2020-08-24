@@ -52,8 +52,6 @@ void setup() {
   Serial.begin(115200);
   ttgo = TTGOClass::getWatch();
   ttgo->begin();
-  ttgo->openBL();
-  ttgo->bl->adjust(normalBrightness);
   ttgo->lvgl_begin();
   rtc = ttgo->rtc;
   rtc->check();
@@ -66,12 +64,13 @@ void setup() {
   notifications.setRemovedCallback(onNotificationRemoved);
 
   setupStyles();
-//  NotificationScreenBuild();
-//  lv_scr_load(notificationScreen);
+
   ClockScreenBuild();
-  lv_scr_load(clockScreen);
   
-  delay(2000);
+  ttgo->openBL();
+  ttgo->bl->adjust(normalBrightness);
+  
+  lv_scr_load(clockScreen);
 }
 
 void loop() {
