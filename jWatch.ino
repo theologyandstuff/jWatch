@@ -17,6 +17,7 @@ bool              bluetoothConnected              = false;
 bool              lvglIsRunning                   = true;
 TTGOClass *       ttgo;
 PCF8563_Class *   rtc;
+uint16_t          startupTime                     = 0;
 
 lv_task_t *       powerTask;
 bool              IRQHasMessage;
@@ -71,6 +72,11 @@ void setup() {
   ttgo->bl->adjust(normalBrightness);
   
   lv_scr_load(clockScreen);
+
+  startupTime = millis();
+  Serial.print("Started up in ");
+  Serial.print(((float)startupTime)/1000);
+  Serial.println(" seconds");
 }
 
 void loop() {
